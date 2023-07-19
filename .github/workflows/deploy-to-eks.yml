@@ -28,38 +28,39 @@ on:
         required: true
 
 jobs:
-  build:
-    name: Build Image
+  jobs:
+  deploy:
+    name: deploy to cluster
     runs-on: ubuntu-latest
     steps:
-
-    - name: Check out code
+    - name: Checkout
       uses: actions/checkout@v2
-    
+
     - name: Configure AWS credentials
       uses: aws-actions/configure-aws-credentials@v1
       with:
         aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         aws-session-token: ${{ secrets.AWS_SESSION_TOKEN }}
-        aws-region: ${{ secrets.AWS_DEFAULT_REGION }}
-
+        aws-region: us-east-2
+    
     - name: Login to Amazon ECR
       id: login-ecr
       uses: aws-actions/amazon-ecr-login@v1
 
-    - name: Build, tag, and push image to Amazon ECR
+    - name: deploy to cluster
+      uses: kodermax/kubectl-aws-eks@master
       env:
-        ECR_REGISTRY: 346054926618.dkr.ecr.us-east-1.amazonaws.com ${{ secrets.ECR_REGISTRY }}
+        KUBE_CONFIG_DATA: ${{ secrets.KUBE_CONFIG_DATA }}
+        ECR_REGISTRY: 346054926618.dkr.ecr.us-east-1.amazonaws.com #${{ secrets.ECR_REGISTRY }}
         ECR_REPOSITORY: products-service-example
         IMAGE_TAG: products-service-example
-      run: |
-        docker build -t 346054926618.dkr.ecr.us-east-1.amazonaws.com/products-service-example:products-service-example .
-        docker push 346054926618.dkr.ecr.us-east-1.amazonaws.com/products-service-example:products-service-example
-
-      - name: Iniciar PODS 
-        run: |
-          aws eks update-kubeconfig -region us-east-1 -name "devops-grupo-8-DEV" 
-          kubectl apply -f kubernetes/pod.yml  -f kubernetes/services.yml -f kubernetes/networking.yml
-
-  
+      with:
+        args: set image deployment/products-service-example products-service-example=346054926618.dkr.ecr.us-east-1.amazonaws.com/products-service-example:$IMAGE_TAG
+        
+    - name: verify deployment
+      uses: kodermax/kubectl-aws-eks@master
+      env:
+        KUBE_CONFIG_DATA: ${{ secrets.KUBE_CONFIG_DATA }}
+      with:
+        args: rollout status deployment/my-app
