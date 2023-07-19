@@ -24,8 +24,6 @@ on:
         required: true
       ECR_REGISTRY:
         required: true
-      CLUSTER_URL:
-        required: true
         
 
 jobs:
