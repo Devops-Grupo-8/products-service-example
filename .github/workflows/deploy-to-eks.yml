@@ -65,4 +65,4 @@ jobs:
         ECR_REPOSITORY: products-service-example
         IMAGE_TAG: ${{ github.sha }}
       with:
-        args: set image deployment/products-service-example products-service-example=346054926618.dkr.ecr.us-east-1.amazonaws.com/products-service-example:$IMAGE_TAG
+        args: set image deployment/products-service-example products-service-example=346054926618.dkr.ecr.us-east-1.amazonaws.com/products-service-example #:$IMAGE_TAG
