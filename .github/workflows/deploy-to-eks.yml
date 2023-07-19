@@ -24,7 +24,8 @@ on:
         required: true
       ECR_REGISTRY:
         required: true
-        
+      KUBE_CONFIG_DATA:
+        required: true
 
 jobs:
   build:
