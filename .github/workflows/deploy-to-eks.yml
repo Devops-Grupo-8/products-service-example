@@ -58,12 +58,20 @@ jobs:
         docker push 346054926618.dkr.ecr.us-east-1.amazonaws.com/products-service-example:products-service-example
 
     - name: Deploy to Kubernetes cluster                                                                            
-      run: |
-        kubectl create products-service-example --image=346054926618.dkr.ecr.us-east-1.amazonaws.com/products-service-example-- /agnhost netexec --port=8080
-        kubectl get products-service-example
-        kubectl expose products-service-example --type=LoadBalancer --port=8080
-        kubectl get services
-        minikube service products-service-example
+      uses: kodermax/kubectl-aws-eks@master                                                                         
+      env:                                                                                                          
+        RELEASE_IMAGE: 346054926618.dkr.ecr.us-east-1.amazonaws.com/products-service-example:products-service-example
+      with:                                                                                                         
+        args: set image deployment/products-service-example app=${{ env.RELEASE_IMAGE }} --record -n products-servicer-example 
+
+
+    #- name: Deploy to Kubernetes cluster                                                                            
+    #  run: |
+    #    kubectl create products-service-example --image=346054926618.dkr.ecr.us-east-1.amazonaws.com/products-service-example-- /agnhost netexec --port=8080
+    #    kubectl get products-service-example
+    #    kubectl expose products-service-example --type=LoadBalancer --port=8080
+    #    kubectl get services
+    #    minikube service products-service-example
 
     
     #- name: deploy to cluster
