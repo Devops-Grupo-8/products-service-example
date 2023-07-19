@@ -49,16 +49,12 @@ jobs:
       id: login-ecr
       uses: aws-actions/amazon-ecr-login@v1
 
-    - name: Build, tag, and push image to Amazon ECR
+    - name: deploy to cluster
+      uses: kodermax/kubectl-aws-eks@master
       env:
-        ECR_REGISTRY: 346054926618.dkr.ecr.us-east-1.amazonaws.com #${{ secrets.ECR_REGISTRY }}
-        ECR_REPOSITORY: ${{ secrets.ECR_REPOSITORY }}
-        IMAGE_TAG: products-service-example-dev
-      run: |
-        docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:products-service-example-dev .
-        docker push $ECR_REGISTRY/$ECR_REPOSITORY:products-service-example-dev
-
-    - name: Deploy to Kubernetes cluster                                                                            
-      run: |
-        kubectl config set-cluster devops-grupo-8-DEV --server=${CLUSTER_URL}
-        kubectl apply -f deployment-dev.yml
+        KUBE_CONFIG_DATA: ${{ secrets.KUBE_CONFIG_DATA }}
+        ECR_REGISTRY: 346054926618.dkr.ecr.us-east-1.amazonaws.com #${{ steps.login-ecr.outputs.registry }}
+        ECR_REPOSITORY: products-service-example
+        IMAGE_TAG: ${{ github.sha }}
+      with:
+        args: set image deployment/$ECR_REPOSITORY $ECR_REPOSITORY=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
