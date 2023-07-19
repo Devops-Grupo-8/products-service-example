@@ -3,7 +3,7 @@ name: Github Action Workflow DEV
 on:
   push:
     branches:
-      - eks-vicente
+      - master
   repository_dispatch:
     types:
       - build-dev
@@ -15,7 +15,7 @@ concurrency:
 
 jobs:
   build-dev:
-    uses: Devops-Grupo-8/products-service-example/.github/workflows/deploy-to-eks.yml@eks-vicente
+    uses: Devops-Grupo-8/products-service-example/.github/workflows/deploy-to-eks.yml@master
     with:
       CI_ENV: dev
       CONTENTFUL_ENVIRONMENT: 'dev'
