@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: contenedor-products
-          image: 346054926618.dkr.ecr.us-east-1.amazonaws.com/products-service-example:products-service-example-dev
+          image: 346054926618.dkr.ecr.us-east-1.amazonaws.com/products-service-example:products-service-example
           ports:
             - containerPort: 8080
 ---
