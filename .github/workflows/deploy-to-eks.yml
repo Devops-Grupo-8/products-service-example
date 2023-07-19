@@ -57,12 +57,22 @@ jobs:
         docker build -t 346054926618.dkr.ecr.us-east-1.amazonaws.com/products-service-example:products-service-example .
         docker push 346054926618.dkr.ecr.us-east-1.amazonaws.com/products-service-example:products-service-example
 
-    - name: deploy to cluster
-      uses: kodermax/kubectl-aws-eks@master
-      env:
-        KUBE_CONFIG_DATA: ${{ secrets.KUBE_CONFIG_DATA }}
-        ECR_REGISTRY: 346054926618.dkr.ecr.us-east-1.amazonaws.com #${{ steps.login-ecr.outputs.registry }}
-        ECR_REPOSITORY: products-service-example
-        IMAGE_TAG: ${{ github.sha }}
-      with:
-        args: set image deployment/products-service-example products-service-example=346054926618.dkr.ecr.us-east-1.amazonaws.com/products-service-example #:$IMAGE_TAG
+    - name: Deploy to Kubernetes cluster                                                                            
+      run: |
+        kubectl create products-service-example --image=346054926618.dkr.ecr.us-east-1.amazonaws.com/products-service-example:products-service-example-dev-- /agnhost netexec --port=8080
+        kubectl get products-service-example
+        kubectl expose products-service-example --type=LoadBalancer --port=8080
+        kubectl get services
+        minikube service products-service-example
+
+    
+    #- name: deploy to cluster
+    #  uses: kodermax/kubectl-aws-eks@master
+    #  env:
+    #    KUBE_CONFIG_DATA: ${{ secrets.KUBE_CONFIG_DATA }}
+    #    ECR_REGISTRY: 346054926618.dkr.ecr.us-east-1.amazonaws.com #${{ steps.login-ecr.outputs.registry }}
+    #    ECR_REPOSITORY: products-service-example
+    #    IMAGE_TAG: ${{ github.sha }}
+    #  with:
+    #    args: set image deployment/products-service-example products-service-example=346054926618.dkr.ecr.us-east-1.amazonaws.com/products-service-example #:$IMAGE_TAG
+    
