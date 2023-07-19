@@ -1,0 +1,33 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: products-service-example-dev
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: products-service-example
+      env: dev
+  template:
+    metadata:
+      labels:
+        app: products-service-example
+        env: dev
+    spec:
+      containers:
+        - name: contenedor-products
+          image: 045017788685.dkr.ecr.us-east-1.amazonaws.com/products-service-example:products-service-example-dev
+          ports:
+            - containerPort: 8080
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ms-products-service
+spec:
+  selector:
+    app: ms-products
+  ports:
+    - protocol: TCP
+      port: 8080
+      targetPort: 8080
